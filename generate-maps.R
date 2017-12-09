@@ -66,7 +66,7 @@ country_shapes_nuts0_all_crop <- crop(country_shapes_nuts0_all, cropping_info)
 positive_nuts_crop <- crop(positive_nuts, cropping_info)
 
 png(file = "figs/distribution_aedes_albopictus.png",
-    width = 7.2, height = 5, units = 'in', res = 1000)
+    width = 7, height = 4.8, units = 'in', res = 1000)
 par(mar=c(2.5,2.5,1.5,1.5))
 plot(country_shapes_nuts0_all_crop, cex.axis=0.9, axes = T)
 plot(positive_nuts_crop, border = "gray", col = "red", add = T)
@@ -85,8 +85,15 @@ country_shapes_nuts0_all_crop <- crop(country_shapes_nuts0_all, cropping_info)
 temp_14d_21C_crop <- crop(temp_14d_21C, cropping_info)
 
 clip<-function(raster,shape) {
-  a1_crop<-crop(raster,shape)
-  mask(a1_crop,shape)}
+  cr <- crop(raster, extent(shape), snap="out")                    
+  fr <- rasterize(shape, cr, getCover = T)   
+  lr <- mask(x=cr, mask=fr)
+  
+}
+
+clip<-function(raster,shape) {
+ 
+}
 
 temp_14d_21C_mask_all <- mask(temp_14d_21C, country_shapes_nuts0_all_crop)
 temp_14d_21C_mask_positive <- mask(temp_14d_21C, positive_nuts_crop)
@@ -136,45 +143,38 @@ points(cbind(16.837,	39.473), lwd = 2,
        col = "black", bg = rbPal(5)[extract(temp_14d_21C_mask_all3, cbind(16.837,	39.473))], cex = 2.6, pch = 21)
 dev.off()
 
+#positive_nuts_crop, temp_14d_21C
+clip <- function(shape_dat, raster_dat){
+  raster_dat_2 <- raster_dat
+  fr <- rasterize(shape_dat, raster_dat_2, getCover = T)   
+  raster_dat_2[fr==0] <- 0 
+  raster_dat_3 <- reclassify(raster_dat_2,
+             cbind(NA, 0))
+  reclassify(raster_dat_3, 
+                                           rclmat, right=NA)
+}
 
-temp_14d_21C_albo_positive_clip <- clip(temp_14d_21C, positive_nuts_crop)
-alb3 <- clip(temp_14d_21C, alb2)
-mne3 <- clip(temp_14d_21C, mne2)
-bih3 <- clip(temp_14d_21C, bih)
+temp_14d_21C_mask_reclass2 <- clip(positive_nuts_crop, temp_14d_21C_crop)
+alb5 <- clip(alb2, temp_14d_21C_crop)
+mne5 <- clip(mne2, temp_14d_21C_crop)
+bih5 <- clip(bih, temp_14d_21C_crop)
 
-# NAs to zero
-plot(temp_14d_21C_albo_positive_clip)
-temp_14d_21C_albo_positive_clip2 <- reclassify(temp_14d_21C_albo_positive_clip,
-                                         cbind(NA, 0))
-alb4 <- reclassify(alb3,
-                                         cbind(NA, 0))
-mne4 <- reclassify(mne3,
-                                         cbind(NA, 0))
-bih4 <- reclassify(bih3,
-                                         cbind(NA, 0))
+eb <- stack(temp_14d_21C_mask_reclass2, alb5, mne5, bih5)
+er <- max(eb)
 
-
-temp_14d_21C_mask_reclass2 <- reclassify(temp_14d_21C_albo_positive_clip2, 
-                                         rclmat, right=NA)
-alb5 <- reclassify(alb4, 
-                                         rclmat, right=NA)
-mne5 <- reclassify(mne4, 
-                                         rclmat, right=NA)
-bih5 <- reclassify(bih4, 
-                                         rclmat, right=NA)
 
 png(file = "figs/merge_albopictus_distribution-transmission_period.png",
     width = 7, height = 4.8, units = 'in', res = 1000)
 par(mar=c(2.5,2.5,1.5,1.5))
 plot(country_shapes_nuts0_all_crop, cex.axis=0.9, axes = T)
-plot(temp_14d_21C_mask_reclass2, add = T, 
+plot(er, add = T, 
      col = c("white", rbPal(5)), legend = F)
-plot(alb5, legend = F, add = T, col = c("white",
-                                        rbPal(5)[1:3]))
-plot(mne5, legend = F, add = T, col = c("white",
-                                        rbPal(5)[1:3]))
-plot(bih5, legend = F, add = T, col = c("white",
-                                        rbPal(5)[1:3]))
+#plot(alb5, legend = F, add = T, col = c("white",
+#                                        rbPal(5)[1:3]))
+#plot(mne5, legend = F, add = T, col = c("white",
+#                                        rbPal(5)[1:3]))
+#plot(bih5, legend = F, add = T, col = c("white",
+#                                        rbPal(5)[1:3]))
 plot(positive_nuts_crop, border = "gray", add = T, col = NA)
 plot(alb2, border = "gray", add = T, col = NA)
 plot(mne2, border = "gray", add = T, col = NA)

@@ -1,29 +1,13 @@
-# clear memory
-rm(list = ls())
-
-# load libraries
-#library(dplyr)
-#library(ggplot2)
-#library(eurostat)
-#library(raster)
-#library(dismo)
-#library(plyr)
-#library(ROCR)
-#library(gtools)
-#library(spatstat)
-#library(ecospat)
-#library(gamm4)
-#library(mgcv)  
-
+# load libraries----------------------------------------
 library(maptools)
 library(raster)
 
-# set working directory
-setwd("C:/Users/RenkeLuehken/Google Drive/Project/VectorCompetenceRiskMaps")
-#setwd("G:/NeuAll/Project/VecCompRiskMap")
+# set working directory----------------------------------------
+#setwd("C:/Users/RenkeLuehken/Google Drive/Project/VectorCompetenceRiskMaps")
+setwd("G:/NeuAll/Project/VectorCompetenceRiskMaps")
 
 # read shapefiles of European countries----------------------------------------
-# countries in Europe
+# all countries in Europe
 european_countries <- c("BEL", "BGR", "DNK", "DEU", "EST", "FIN",
                  "FRA", "GRC", "IRL", "ITA", "HRV", "LTU",
                  "LUX", "MLT", "NLD", "AUT", "POL", "PRT",
@@ -61,12 +45,12 @@ mne2 <- mne[c(4,7,8,9,10,12,14,18,21),]
 bih <- getData("GADM", country = "BIH", level = 1)
 
 # cropping
-cropping_info <- c(-9, 25, 35, 49.8)
+cropping_info <- c(-9, 25, 36, 49.8)
 country_shapes_nuts0_all_crop <- crop(country_shapes_nuts0_all, cropping_info)
 positive_nuts_crop <- crop(positive_nuts, cropping_info)
 
 png(file = "figs/distribution_aedes_albopictus.png",
-    width = 7, height = 4.8, units = 'in', res = 1000)
+    width = 7, height = 4.3, units = 'in', res = 1000)
 par(mar=c(2.5,2.5,1.5,1.5))
 plot(country_shapes_nuts0_all_crop, cex.axis=0.9, axes = T)
 plot(positive_nuts_crop, border = "gray", col = "red", add = T)
@@ -81,8 +65,11 @@ dev.off()
 
 # temperature data----------------------------------------
 temp_14d_21C <- raster("output/zika_mean_map_14_21.grd")
+temp_14d_21C <- crop(temp_14d_21C, cropping_info)
 country_shapes_nuts0_all_crop <- crop(country_shapes_nuts0_all, cropping_info)
 
+testst <- lapply(2007:2016, function(x) stack(paste("G:/NeuAll/Research_projects/Extract_E_OBS_gridded_dataset/output/tg_0.25deg_reg_v14.0_europe_", 
+                                                    x, ".grd", sep = "")))
 testst <- lapply(2007:2016, function(x) stack(paste("C:/Users/RenkeLuehken/Google Drive/Research_projects/Extract_E_OBS_gridded_dataset/output/tg_0.25deg_reg_v14.0_europe_", 
                                                     x, ".grd", sep = "")))
 testst2 <- stack(testst)
@@ -128,27 +115,23 @@ temp_14d_21C_mask_all3 <- reclassify(temp_14d_21C_mask_all2,
 temp_14d_21C_mask_positive3 <- reclassify(temp_14d_21C_mask_positive2, 
                                      rclmat)
 
-
-
 rbPal <- colorRampPalette(c("yellow","red","purple"))
 
-
-
 png(file = "figs/transmission_period.png",
-    width = 7, height = 4.8, units = 'in', res = 1000)
-par(mar=c(2.5,2.5,1.5,1.5))
-plot(country_shapes_nuts0_all_crop, cex.axis=0.9, axes = T)
+    width = 7, height = 4.2, units = 'in', res = 1000)
+par(mar=c(0,0,0,0))
+plot(country_shapes_nuts0_all_crop, cex.axis=0.9, axes = F)
 plot(temp_14d_21C_mask_all3, legend = F, add = T, col = c("white",
                                       rbPal(5), "gray"))
 plot(country_shapes_nuts0_all_crop, add = T, col = NA)
-legend("bottom", legend = c("0 d",
+legend(-10,49.7, legend = c("NA", "0 d",
                             ">0-30 d",
                             ">30-60 d",
                             ">60-90 d",
                             ">90-120 d",
-                            ">120-160 d"),horiz = T, 
-       cex = 0.805, bg = "white",
-       fill = c("white", rbPal(5)))
+                            ">120-160 d"),horiz = F, 
+       cex = 1, bty = "n",
+       fill = c("gray", "white", rbPal(5)))
 points(cbind(7.843,	48.016), lwd = 2, 
        col = "green", bg = rbPal(5)[extract(temp_14d_21C_mask_all3, cbind(7.843,	48.016))], cex = 2.6, pch = 21)
 points(cbind(8.652,	49.411), lwd = 2, 
@@ -156,6 +139,8 @@ points(cbind(8.652,	49.411), lwd = 2,
 points(cbind(16.837,	39.473), lwd = 2, 
        col = "black", bg = rbPal(5)[extract(temp_14d_21C_mask_all3, cbind(16.837,	39.473))], cex = 2.6, pch = 21)
 dev.off()
+
+
 
 #positive_nuts_crop, temp_14d_21C
 clip <- function(shape_dat, raster_dat){
@@ -176,9 +161,9 @@ er <- max(eb)
 
 
 png(file = "figs/merge_albopictus_distribution-transmission_period.png",
-    width = 7, height = 4.8, units = 'in', res = 1000)
-par(mar=c(2.5,2.5,1.5,1.5))
-plot(country_shapes_nuts0_all_crop, cex.axis=0.9, axes = T)
+    width = 7, height = 4.2, units = 'in', res = 1000)
+par(mar=c(0,0,0,0))
+plot(country_shapes_nuts0_all_crop, cex.axis=0.9, axes = F)
 plot(er, add = T, 
      col = c("white", rbPal(5), "gray"), legend = F)
 #plot(alb5, legend = F, add = T, col = c("white",
@@ -191,23 +176,23 @@ plot(positive_nuts_crop, border = "gray", add = T, col = NA)
 plot(alb2, border = "gray", add = T, col = NA)
 plot(mne2, border = "gray", add = T, col = NA)
 plot(bih, border = "gray", add = T, col = NA)
+
 points(cbind(8.652,	49.411), lwd = 2, col = "orange", cex = 1.5)
 points(cbind(7.843,	48.016), lwd = 2, col = "green", cex = 1.5)
 points(cbind(16.837,	39.473), lwd = 2, col = "blue", cex = 1.5)
 plot(country_shapes_nuts0_all_crop, add = T, col = NA)
-legend("bottom", legend = c("0 d",
+legend(-10,49.7, legend = c("NA", "0 d",
                              ">0-30 d",
                              ">30-60 d",
                              ">60-90 d",
                              ">90-120 d",
-                             ">120-160 d"),horiz = T, 
-       cex = 0.805,
-       fill = c("white", rbPal(5)))
+                             ">120-160 d"),horiz = F, 
+       cex = 1, bty = "n",
+       fill = c("gray", "white", rbPal(5)))
 points(cbind(7.843,	48.016), lwd = 2, 
        col = "green", bg = rbPal(5)[extract(temp_14d_21C_mask_all3, cbind(7.843,	48.016))], cex = 2.6, pch = 21)
 points(cbind(8.652,	49.411), lwd = 2, 
        col = "orange", bg = rbPal(5)[extract(temp_14d_21C_mask_all3, cbind(8.652,	49.411))], cex = 2.6, pch = 21)
 points(cbind(16.837,	39.473), lwd = 2, 
        col = "black", bg = rbPal(5)[extract(temp_14d_21C_mask_all3, cbind(16.837,	39.473))], cex = 2.6, pch = 21)
-dev.off() 
-
+dev.off()

@@ -32,7 +32,7 @@ invasive_species_distribution <- read.csv("data/Invasive species.csv", sep = ";"
 
 # only established Aedes albopictus populations
 invasive_species_distribution_sub <- subset(invasive_species_distribution, vectorspecies == "Aedes_albopictus" & statusDescription == "Established")
-
+unique(invasive_species_distribution_sub$country)
 # select nuts-shapes
 positive_nuts <- subset(nuts_all, 
                         (NUTS_ID %in% c(unique(as.character(invasive_species_distribution_sub$geoID)))))
@@ -50,17 +50,40 @@ country_shapes_nuts0_all_crop <- crop(country_shapes_nuts0_all, cropping_info)
 positive_nuts_crop <- crop(positive_nuts, cropping_info)
 
 png(file = "figs/distribution_aedes_albopictus.png",
-    width = 7, height = 4.3, units = 'in', res = 1000)
-par(mar=c(2.5,2.5,1.5,1.5))
-plot(country_shapes_nuts0_all_crop, cex.axis=0.9, axes = T)
+    width = 7, height = 4.2, units = 'in', res = 1000)
+par(mar=c(0,0,0,0))
+plot(country_shapes_nuts0_all_crop, cex.axis=0.9, axes = F)
 plot(positive_nuts_crop, border = "gray", col = "red", add = T)
 plot(alb2, border = "gray", col = "red", add = T)
 plot(mne2, border = "gray", col = "red", add = T)
 plot(bih, border = "gray", col = "red", add = T)
 plot(country_shapes_nuts0_all_crop, col = NA, add = T)
-points(cbind(7.843,	48.016), lwd = 2, col = "green", cex = 2.6)
-points(cbind(8.652,	49.411), lwd = 2, col = "orange", cex = 2.6)
-points(cbind(16.837,	39.473), lwd = 2, col = "blue", cex = 2.6)
+# Anzio
+points(cbind(12.914429,	41.771312), lwd = 5, 
+       col = "black", cex = 2.6)
+# guardavalle marina italien
+points(cbind(16.276245,	38.634036), lwd = 5, 
+       col = "black", cex = 2.6)
+# e Cannet-des-Maures
+points(cbind(6.341427,	43.390954), lwd = 5, 
+       col = "black", cex = 2.6)
+# Fréjus
+points(cbind(6.737034,	43.433152), lwd = 5, 
+       col = "black", cex = 2.6)
+# montpellier
+points(cbind(3.876716,	43.610769), lwd = 5, 
+       col = "black", cex = 2.6)
+# ravenna
+points(cbind(12.041016,	44.418088), lwd = 5, 
+       col = "black", cex = 2.6)
+
+points(cbind(7.843,	48.016), lwd = 5, 
+       col = "green", cex = 2.6)
+points(cbind(8.652,	49.411), lwd = 5, 
+       col = "orange", cex = 2.6)
+points(cbind(16.837,	39.473), lwd = 5, 
+       col = "blue", cex = 2.6)
+text(c(24.3),c(49.3),labels=c("A"), cex=3)
 dev.off()
 
 # temperature data----------------------------------------
@@ -72,8 +95,10 @@ testst <- lapply(2007:2016, function(x) stack(paste("G:/NeuAll/Research_projects
                                                     x, ".grd", sep = "")))
 testst <- lapply(2007:2016, function(x) stack(paste("C:/Users/RenkeLuehken/Google Drive/Research_projects/Extract_E_OBS_gridded_dataset/output/tg_0.25deg_reg_v14.0_europe_", 
                                                     x, ".grd", sep = "")))
+
 testst2 <- stack(testst)
 testst3 <- crop(testst2, cropping_info)
+testst3[[1]] <- testst3[[1]]^2 * (-1)
 testst3[[1]][is.na((testst3[[1]]))] <- 240
 
 #temp_14d_21C_crop <- crop(temp_14d_21C, cropping_info)
@@ -132,12 +157,32 @@ legend(-10,49.7, legend = c("NA", "0 d",
                             ">120-160 d"),horiz = F, 
        cex = 1, bty = "n",
        fill = c("gray", "white", rbPal(5)))
-points(cbind(7.843,	48.016), lwd = 2, 
+# Anzio
+points(cbind(12.914429,	41.771312), lwd = 5, 
+       col = "black", cex = 2.6)
+# guardavalle marina italien
+points(cbind(16.276245,	38.634036), lwd = 5, 
+       col = "black", cex = 2.6)
+# e Cannet-des-Maures
+points(cbind(6.341427,	43.390954), lwd = 5, 
+       col = "black", cex = 2.6)
+# Fréjus
+points(cbind(6.737034,	43.433152), lwd = 5, 
+       col = "black", cex = 2.6)
+# montpellier
+points(cbind(3.876716,	43.610769), lwd = 5, 
+       col = "black", cex = 2.6)
+# ravenna
+points(cbind(12.041016,	44.418088), lwd = 5, 
+       col = "black", cex = 2.6)
+
+points(cbind(7.843,	48.016), lwd = 5, 
        col = "green", bg = rbPal(5)[extract(temp_14d_21C_mask_all3, cbind(7.843,	48.016))], cex = 2.6, pch = 21)
-points(cbind(8.652,	49.411), lwd = 2, 
+points(cbind(8.652,	49.411), lwd = 5, 
        col = "orange", bg = rbPal(5)[extract(temp_14d_21C_mask_all3, cbind(8.652,	49.411))], cex = 2.6, pch = 21)
-points(cbind(16.837,	39.473), lwd = 2, 
-       col = "black", bg = rbPal(5)[extract(temp_14d_21C_mask_all3, cbind(16.837,	39.473))], cex = 2.6, pch = 21)
+points(cbind(16.837,	39.473), lwd = 5, 
+       col = "blue", cex = 2.6)
+text(c(24.3),c(49.3),labels=c("B"), cex=3)
 dev.off()
 
 
@@ -166,20 +211,12 @@ par(mar=c(0,0,0,0))
 plot(country_shapes_nuts0_all_crop, cex.axis=0.9, axes = F)
 plot(er, add = T, 
      col = c("white", rbPal(5), "gray"), legend = F)
-#plot(alb5, legend = F, add = T, col = c("white",
-#                                        rbPal(5)[1:3]))
-#plot(mne5, legend = F, add = T, col = c("white",
-#                                        rbPal(5)[1:3]))
-#plot(bih5, legend = F, add = T, col = c("white",
-#                                        rbPal(5)[1:3]))
+
 plot(positive_nuts_crop, border = "gray", add = T, col = NA)
 plot(alb2, border = "gray", add = T, col = NA)
 plot(mne2, border = "gray", add = T, col = NA)
 plot(bih, border = "gray", add = T, col = NA)
 
-points(cbind(8.652,	49.411), lwd = 2, col = "orange", cex = 1.5)
-points(cbind(7.843,	48.016), lwd = 2, col = "green", cex = 1.5)
-points(cbind(16.837,	39.473), lwd = 2, col = "blue", cex = 1.5)
 plot(country_shapes_nuts0_all_crop, add = T, col = NA)
 legend(-10,49.7, legend = c("NA", "0 d",
                              ">0-30 d",
@@ -189,10 +226,31 @@ legend(-10,49.7, legend = c("NA", "0 d",
                              ">120-160 d"),horiz = F, 
        cex = 1, bty = "n",
        fill = c("gray", "white", rbPal(5)))
-points(cbind(7.843,	48.016), lwd = 2, 
+
+# Anzio
+points(cbind(12.914429,	41.771312), lwd = 5, 
+       col = "black", cex = 2.6)
+# guardavalle marina italien
+points(cbind(16.276245,	38.634036), lwd = 5, 
+       col = "black", cex = 2.6)
+# Cannet-des-Maures
+points(cbind(6.341427,	43.390954), lwd = 5, 
+       col = "black", cex = 2.6)
+# Fréjus
+points(cbind(6.737034,	43.433152), lwd = 5, 
+       col = "black", cex = 2.6)
+# montpellier
+points(cbind(3.876716,	43.610769), lwd = 5, 
+       col = "black", cex = 2.6)
+# ravenna
+points(cbind(12.041016,	44.418088), lwd = 5, 
+       col = "black", cex = 2.6)
+
+points(cbind(7.843,	48.016), lwd = 5, 
        col = "green", bg = rbPal(5)[extract(temp_14d_21C_mask_all3, cbind(7.843,	48.016))], cex = 2.6, pch = 21)
-points(cbind(8.652,	49.411), lwd = 2, 
+points(cbind(8.652,	49.411), lwd = 5, 
        col = "orange", bg = rbPal(5)[extract(temp_14d_21C_mask_all3, cbind(8.652,	49.411))], cex = 2.6, pch = 21)
-points(cbind(16.837,	39.473), lwd = 2, 
-       col = "black", bg = rbPal(5)[extract(temp_14d_21C_mask_all3, cbind(16.837,	39.473))], cex = 2.6, pch = 21)
+points(cbind(16.837,	39.473), lwd = 5, 
+       col = "blue", cex = 2.6)
+text(c(24.3),c(49.3),labels=c("C"), cex=3)
 dev.off()
